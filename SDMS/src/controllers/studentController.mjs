@@ -9,7 +9,6 @@ const createStudent = async (req, res) => {
     const data = req.body;
     const {rollNo,email}=req.body;
     const checkUser=await studentModel.findOne({email:email,rollNo:rollNo});
-    console.log(checkUser);
      if(checkUser){
         return res.status(200).send({status:"failed",message:"user already exits"});
      }
@@ -38,4 +37,20 @@ const updateStudent = async (req, res) => {
   );
   return res.status(200).send({ status: true, message: newStudent });
 };
-export { findStudent, createStudent, deleteStudent, updateStudent };
+const searchStudent=async (req,res)=>{
+  try {
+    const {minage,maxage,semester}=req.query;
+    // and operation works when all condition are true and it's also default
+    // const result= await studentModel.find({$and:[{age:{$gte:minage,$lte:maxage}},{semester:semester}]});
+    // or operator works when any of the condition is true
+    // const result= await studentModel.find({$or:[{age:{$gte:minage,$lte:maxage}},{semester:semester}]});
+    // it's works for all the values which are not mached with condition
+    // const result= await studentModel.find({$nor:[{age:{$gte:minage,$lte:maxage}},{semester:semester}]});
+    // const result= await studentModel.find({age:{$not:{$gt:minage}}});
+    const result=await studentModel.where('age').equals(minage);
+    return res.status(200).send({status:"successful",message:result});
+  } catch (error) {
+    return res.status(500).send({status:"failed",message:error.message})
+  }
+}
+export { findStudent, createStudent, deleteStudent, updateStudent,searchStudent };
